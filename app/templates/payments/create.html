@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}{{ t.new_payment }} - EliteSport{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h4 class="mb-4"><i class="bi bi-wallet2"></i> {{ t.new_payment }}</h4>
+
+        {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+
+        <div class="card">
+            <div class="card-body p-4">
+                <form method="POST" action="/payments/create">
+                    <div class="mb-3">
+                        <label class="form-label">{{ t.client }} *</label>
+                        <select name="client_id" class="form-select" required>
+                            <option value="">{{ t.select_client }}</option>
+                            {% for c in clients %}
+                            <option value="{{ c.id }}" {% if selected_client_id == c.id %}selected{% endif %}>
+                                {{ c.full_name }} ({{ c.phone }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ t.tariff }} *</label>
+                        <select name="tariff_id" class="form-select" id="tariff-select" required>
+                            <option value="">{{ t.select_tariff }}</option>
+                            {% for tr in tariffs %}
+                            <option value="{{ tr.id }}" data-price="{{ tr.price }}" data-days="{{ tr.duration_days }}">
+                                {{ tr.name }} — {{ "%.0f"|format(tr.price) }} RUB ({{ tr.duration_days }} {{ t.days }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ t.start_date }} *</label>
+                        <input type="date" name="valid_from" class="form-control" id="valid-from" required>
+                    </div>
+                    <div id="summary" class="alert alert-info d-none">
+                        <div class="d-flex justify-content-between">
+                            <div><strong>{{ t.total }}:</strong> <span id="sum-price"></span> RUB</div>
+                            <div><strong>{{ t.valid_until }}:</strong> <span id="sum-until"></span></div>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success"><i class="bi bi-check-lg"></i> {{ t.process_payment }}</button>
+                        <a href="/payments" class="btn btn-outline-secondary">{{ t.cancel }}</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('valid-from').value = new Date().toISOString().split('T')[0];
+    const ts = document.getElementById('tariff-select'), vf = document.getElementById('valid-from');
+    const sm = document.getElementById('summary'), sp = document.getElementById('sum-price'), su = document.getElementById('sum-until');
+    function upd() {
+        const o = ts.selectedOptions[0], f = vf.value;
+        if (!o || !o.dataset.price || !f) { sm.classList.add('d-none'); return; }
+        const d = new Date(f); d.setDate(d.getDate() + parseInt(o.dataset.days));
+        sp.textContent = parseFloat(o.dataset.price).toFixed(2);
+        su.textContent = d.toLocaleDateString('ru-RU');
+        sm.classList.remove('d-none');
+    }
+    ts.addEventListener('change', upd); vf.addEventListener('change', upd); upd();
+});
+</script>
+{% endblock %}

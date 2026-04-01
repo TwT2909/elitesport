@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}{{ t.dashboard }} - EliteSport{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0"><i class="bi bi-grid-1x2"></i> {{ t.dashboard }}</h4>
+    <span class="text-secondary">{{ t.welcome }}, {{ user.full_name }}</span>
+</div>
+
+<div class="row mb-4 g-4">
+    <div class="col-md-4">
+        <div class="card stat-card purple">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="mb-1 text-white-50 small text-uppercase fw-bold">{{ t.active_clients }}</p>
+                        <h2 class="mb-0 text-white fw-bold">{{ total_clients }}</h2>
+                    </div>
+                    <i class="bi bi-people-fill text-white" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                </div>
+                <a href="/clients" class="text-white-50 small mt-2 d-inline-block text-decoration-none">{{ t.view_all }} &rarr;</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card teal">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="mb-1 text-white-50 small text-uppercase fw-bold">{{ t.revenue_month }}</p>
+                        <h2 class="mb-0 text-white fw-bold">{{ "%.0f"|format(payments_this_month) }} &#8381;</h2>
+                    </div>
+                    <i class="bi bi-wallet2 text-white" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                </div>
+                <span class="text-white-50 small mt-2 d-inline-block">{{ payments_count }} {{ t.transactions }}</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card orange">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="mb-1 text-white-50 small text-uppercase fw-bold">{{ t.expiring_soon }}</p>
+                        <h2 class="mb-0 text-white fw-bold">{{ expiring|length }}</h2>
+                    </div>
+                    <i class="bi bi-clock-history text-white" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                </div>
+                <span class="text-white-50 small mt-2 d-inline-block">{{ t.within_7_days }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if expiring %}
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-clock-history"></i> {{ t.expiring_subscriptions }}
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>{{ t.client }}</th>
+                    <th>{{ t.tariff }}</th>
+                    <th>{{ t.expires }}</th>
+                    <th>{{ t.actions }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in expiring %}
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            {% if p.client.photo %}
+                            <img src="/static/uploads/{{ p.client.photo }}" class="client-photo" alt="">
+                            {% else %}
+                            <div class="client-avatar">{{ p.client.first_name[0] }}</div>
+                            {% endif %}
+                            <a href="/clients/{{ p.client.id }}" class="text-decoration-none" style="color: var(--accent-light);">{{ p.client.full_name }}</a>
+                        </div>
+                    </td>
+                    <td>{{ p.tariff.name }}</td>
+                    <td><span class="badge bg-warning text-dark">{{ p.valid_until.strftime('%d.%m.%Y') }}</span></td>
+                    <td><a href="/payments/create?client_id={{ p.client.id }}" class="btn btn-sm btn-outline-success"><i class="bi bi-plus"></i> {{ t.renew }}</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body text-center py-5">
+        <i class="bi bi-check-circle" style="font-size: 3rem; color: var(--success);"></i>
+        <p class="mt-3 text-secondary">{{ t.no_expiring }}</p>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

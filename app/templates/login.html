@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ t.login_title }} - EliteSport</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            background: #000;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 380px;
+            padding: 1rem;
+        }
+
+        .login-card {
+            background: #000;
+            border: 1px solid #2f3336;
+            border-radius: 16px;
+            padding: 2.5rem 2rem;
+        }
+
+        .brand-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.25rem;
+            font-size: 2rem;
+            color: #fff;
+        }
+
+        .brand-name {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #e7e9ea;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: #71767b;
+            font-size: 0.875rem;
+        }
+
+        .form-label {
+            color: #71767b;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+        }
+
+        .form-control {
+            background: #16181c !important;
+            border: none;
+            color: #e7e9ea !important;
+            border-radius: 8px;
+            padding: 0.7rem 1rem;
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+
+        .form-control:focus {
+            background: #16181c !important;
+            color: #e7e9ea !important;
+            box-shadow: none !important;
+            outline: none;
+        }
+
+        .form-control::placeholder { color: #3d4147; }
+
+        .form-control:-webkit-autofill,
+        .form-control:-webkit-autofill:hover,
+        .form-control:-webkit-autofill:focus,
+        .form-control:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 1000px #16181c inset !important;
+            box-shadow: 0 0 0 1000px #16181c inset !important;
+            -webkit-text-fill-color: #e7e9ea !important;
+            caret-color: #e7e9ea;
+            transition: background-color 9999s ease-in-out 0s !important;
+        }
+
+        .input-group {
+            border: 1px solid #2f3336;
+            border-radius: 8px;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .input-group:focus-within {
+            border-color: #1d9bf0;
+            box-shadow: 0 0 0 3px rgba(29, 155, 240, 0.15);
+        }
+
+        .input-group-text {
+            background: #16181c;
+            border: none;
+            color: #71767b;
+            border-radius: 8px 0 0 8px;
+        }
+
+        .input-group .form-control {
+            border: none;
+            border-radius: 0 8px 8px 0;
+            box-shadow: none !important;
+        }
+
+        .btn-login {
+            background: #1d9bf0;
+            border: none;
+            color: white;
+            font-weight: 800;
+            padding: 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: background 0.15s;
+            letter-spacing: 0.2px;
+        }
+
+        .btn-login:hover {
+            background: #1a8cd8;
+            color: white;
+        }
+
+        .alert-danger {
+            background: rgba(244, 33, 46, 0.1);
+            border: 1px solid rgba(244, 33, 46, 0.25);
+            color: #ff6b77;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            padding: 0.6rem 1rem;
+        }
+
+        .lang-switch a {
+            color: #71767b;
+            text-decoration: none;
+            padding: 0.2rem 0.55rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            transition: color 0.15s, background 0.15s;
+        }
+
+        .lang-switch a.active {
+            background: rgba(29, 155, 240, 0.15);
+            color: #1d9bf0;
+        }
+
+        .lang-switch a:hover { color: #e7e9ea; }
+
+        .divider {
+            border-color: #2f3336;
+            opacity: 1;
+            margin: 1.5rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-wrapper">
+        <div class="login-card">
+            <div class="text-center">
+                <div class="lang-switch mb-3">
+                    <a href="/set-lang?lang=en&redirect=/login" class="{% if lang == 'en' %}active{% endif %}">EN</a>
+                    <a href="/set-lang?lang=ru&redirect=/login" class="{% if lang == 'ru' %}active{% endif %}">RU</a>
+                </div>
+                <div class="brand-icon">
+                    <i class="bi bi-lightning-charge-fill" style="color:#1d9bf0;"></i>
+                </div>
+                <div class="brand-name mb-1">EliteSport</div>
+                <p class="subtitle mb-0">{{ t.client_mgmt }}</p>
+            </div>
+
+            <hr class="divider">
+
+            {% if error %}
+            <div class="alert alert-danger mb-3">
+                <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+            </div>
+            {% endif %}
+
+            <form method="POST" action="/login">
+                <div class="mb-3">
+                    <label class="form-label">{{ t.login_label }}</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                        <input type="text" name="username" class="form-control" placeholder="{{ t.enter_login }}" required autofocus>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">{{ t.password_label }}</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                        <input type="password" name="password" class="form-control" placeholder="{{ t.enter_password }}" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-login w-100">
+                    {{ t.sign_in }}
+                </button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

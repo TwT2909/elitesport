@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}{{ t.edit_tariff if tariff else t.new_tariff }} - EliteSport{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h4 class="mb-4"><i class="bi bi-bookmark-star"></i> {{ t.edit_tariff if tariff else t.new_tariff }}</h4>
+
+        {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+
+        <div class="card">
+            <div class="card-body p-4">
+                <form method="POST" action="{{ '/tariffs/' ~ tariff.id if tariff else '/tariffs/create' }}">
+                    <div class="mb-3">
+                        <label class="form-label">{{ t.tariff_name }} *</label>
+                        <input type="text" name="name" class="form-control" value="{{ tariff.name if tariff else '' }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ t.description }}</label>
+                        <textarea name="description" class="form-control" rows="2">{{ tariff.description if tariff and tariff.description else '' }}</textarea>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">{{ t.duration_days }} *</label>
+                            <input type="number" name="duration_days" class="form-control" min="1" value="{{ tariff.duration_days if tariff else '' }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">{{ t.price_rub }} *</label>
+                            <input type="number" name="price" class="form-control" min="0" step="0.01" value="{{ tariff.price if tariff else '' }}" required>
+                        </div>
+                    </div>
+                    {% if tariff %}
+                    <div class="mb-3">
+                        <label class="form-label">{{ t.status }}</label>
+                        <select name="is_active" class="form-select">
+                            <option value="true" {% if tariff.is_active %}selected{% endif %}>{{ t.active }}</option>
+                            <option value="false" {% if not tariff.is_active %}selected{% endif %}>{{ t.inactive }}</option>
+                        </select>
+                    </div>
+                    {% endif %}
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> {{ t.save }}</button>
+                        <a href="/tariffs" class="btn btn-outline-secondary">{{ t.cancel }}</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}{{ client.full_name }} - EliteSport{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="mb-0"><i class="bi bi-person-gear"></i> {{ t.edit_client }}</h4>
+            <a href="/payments/create?client_id={{ client.id }}" class="btn btn-success"><i class="bi bi-plus"></i> {{ t.new_payment }}</a>
+        </div>
+
+        {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+
+        <div class="card">
+            <div class="card-body p-4">
+                <form method="POST" action="/clients/{{ client.id }}" enctype="multipart/form-data">
+                    <div class="d-flex align-items-start gap-4 mb-4">
+                        <div class="photo-upload">
+                            {% if client.photo %}
+                            <div id="photo-preview-container">
+                                <img src="/static/uploads/{{ client.photo }}" class="client-photo-lg">
+                            </div>
+                            {% else %}
+                            <div class="photo-upload-placeholder" id="photo-preview-container">
+                                <i class="bi bi-camera" style="font-size: 1.5rem;"></i>
+                                <small class="mt-1">{{ t.upload_photo }}</small>
+                            </div>
+                            {% endif %}
+                            <input type="file" name="photo" accept="image/*" id="photo-input">
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">{{ t.last_name }} *</label>
+                                    <input type="text" name="last_name" class="form-control" value="{{ client.last_name }}" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">{{ t.first_name }} *</label>
+                                    <input type="text" name="first_name" class="form-control" value="{{ client.first_name }}" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">{{ t.patronymic }}</label>
+                                    <input type="text" name="patronymic" class="form-control" value="{{ client.patronymic or '' }}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label">{{ t.phone }} *</label>
+                            <input type="tel" name="phone" class="form-control" value="{{ client.phone }}" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">{{ t.email }}</label>
+                            <input type="email" name="email" class="form-control" value="{{ client.email or '' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">{{ t.date_of_birth }}</label>
+                            <input type="date" name="birth_date" class="form-control" value="{{ client.birth_date.strftime('%Y-%m-%d') if client.birth_date else '' }}">
+                        </div>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label">{{ t.gender }}</label>
+                            <select name="gender" class="form-select">
+                                <option value="male" {% if client.gender.value == 'male' %}selected{% endif %}>{{ t.male }}</option>
+                                <option value="female" {% if client.gender.value == 'female' %}selected{% endif %}>{{ t.female }}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">{{ t.status }}</label>
+                            <select name="is_active" class="form-select">
+                                <option value="true" {% if client.is_active %}selected{% endif %}>{{ t.active }}</option>
+                                <option value="false" {% if not client.is_active %}selected{% endif %}>{{ t.inactive }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">{{ t.notes }}</label>
+                        <textarea name="notes" class="form-control" rows="3">{{ client.notes or '' }}</textarea>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> {{ t.save }}</button>
+                        <a href="/clients" class="btn btn-outline-secondary">{{ t.back }}</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {% if client.payments %}
+        <div class="card mt-4">
+            <div class="card-header"><i class="bi bi-wallet2"></i> {{ t.payment_history }}</div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr><th>{{ t.date }}</th><th>{{ t.tariff }}</th><th>{{ t.amount }}</th><th>{{ t.valid_until }}</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for p in client.payments|sort(attribute='payment_date', reverse=True) %}
+                        <tr>
+                            <td>{{ p.payment_date.strftime('%d.%m.%Y') }}</td>
+                            <td>{{ p.tariff.name }}</td>
+                            <td>{{ "%.2f"|format(p.amount) }} &#8381;</td>
+                            <td>
+                                {% set today = p.valid_until.__class__.today() %}
+                                {% if p.valid_until < today %}
+                                <span class="badge bg-danger">{{ p.valid_until.strftime('%d.%m.%Y') }}</span>
+                                {% else %}
+                                <span class="badge bg-success">{{ p.valid_until.strftime('%d.%m.%Y') }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+<script>
+document.getElementById('photo-input').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            const c = document.getElementById('photo-preview-container');
+            c.innerHTML = '<img src="' + ev.target.result + '" style="width:120px;height:120px;object-fit:cover;border-radius:16px;">';
+            c.className = '';
+        };
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+{% endblock %}

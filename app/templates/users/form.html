@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}{{ t.edit_user if edit_user else t.new_user }} - EliteSport{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h4 class="mb-4"><i class="bi bi-person-gear"></i> {{ t.edit_user if edit_user else t.new_user }}</h4>
+
+        {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+
+        <div class="card">
+            <div class="card-body p-4">
+                <form method="POST" action="{{ '/users/' ~ edit_user.id if edit_user else '/users/create' }}">
+                    {% if not edit_user %}
+                    <div class="mb-3">
+                        <label class="form-label">{{ t.username }} *</label>
+                        <input type="text" name="username" class="form-control" required>
+                    </div>
+                    {% endif %}
+                    <div class="mb-3">
+                        <label class="form-label">{{ t.full_name }} *</label>
+                        <input type="text" name="full_name" class="form-control" value="{{ edit_user.full_name if edit_user else '' }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ t.new_password if edit_user else t.password }} {{ '*' if not edit_user else '' }}</label>
+                        <input type="password" name="password" class="form-control" {{ '' if edit_user else 'required' }}>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ t.role }} *</label>
+                        <select name="role" class="form-select" required>
+                            <option value="operator" {% if edit_user and edit_user.role.value == 'operator' %}selected{% endif %}>{{ t.operator }}</option>
+                            <option value="manager" {% if edit_user and edit_user.role.value == 'manager' %}selected{% endif %}>{{ t.manager }}</option>
+                            <option value="admin" {% if edit_user and edit_user.role.value == 'admin' %}selected{% endif %}>{{ t.admin }}</option>
+                        </select>
+                    </div>
+                    {% if edit_user %}
+                    <div class="mb-3">
+                        <label class="form-label">{{ t.status }}</label>
+                        <select name="is_active" class="form-select">
+                            <option value="true" {% if edit_user.is_active %}selected{% endif %}>{{ t.active }}</option>
+                            <option value="false" {% if not edit_user.is_active %}selected{% endif %}>{{ t.blocked }}</option>
+                        </select>
+                    </div>
+                    {% endif %}
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> {{ t.save }}</button>
+                        <a href="/users" class="btn btn-outline-secondary">{{ t.cancel }}</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

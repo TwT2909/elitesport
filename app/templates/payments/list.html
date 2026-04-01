@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}{{ t.payments }} - EliteSport{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0"><i class="bi bi-wallet2"></i> {{ t.payment_journal }}</h4>
+    <a href="/payments/create" class="btn btn-primary"><i class="bi bi-plus-lg"></i> {{ t.new_payment }}</a>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>{{ t.date }}</th>
+                    <th>{{ t.client }}</th>
+                    <th>{{ t.tariff }}</th>
+                    <th>{{ t.amount }}</th>
+                    <th>{{ t.valid_from }}</th>
+                    <th>{{ t.valid_until }}</th>
+                    <th>{{ t.created_by }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in payments %}
+                <tr>
+                    <td class="text-secondary">{{ p.id }}</td>
+                    <td>{{ p.payment_date.strftime('%d.%m.%Y %H:%M') }}</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            {% if p.client.photo %}
+                            <img src="/static/uploads/{{ p.client.photo }}" class="client-photo" style="width:30px;height:30px;" alt="">
+                            {% endif %}
+                            <a href="/clients/{{ p.client.id }}" class="text-decoration-none" style="color: var(--accent-light);">{{ p.client.full_name }}</a>
+                        </div>
+                    </td>
+                    <td>{{ p.tariff.name }}</td>
+                    <td class="fw-semibold" style="color: var(--success);">{{ "%.2f"|format(p.amount) }} &#8381;</td>
+                    <td class="text-secondary">{{ p.valid_from.strftime('%d.%m.%Y') }}</td>
+                    <td>{{ p.valid_until.strftime('%d.%m.%Y') }}</td>
+                    <td class="text-secondary">{{ p.creator.full_name }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="8" class="text-center py-5 text-secondary">
+                    <i class="bi bi-wallet" style="font-size: 2rem;"></i>
+                    <p class="mt-2 mb-0">{{ t.no_payments }}</p>
+                </td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% if total_pages > 1 %}
+<nav class="mt-3">
+    <ul class="pagination justify-content-center">
+        {% for p in range(1, total_pages + 1) %}
+        <li class="page-item {% if p == page %}active{% endif %}">
+            <a class="page-link" href="/payments?page={{ p }}{% if client_id %}&client_id={{ client_id }}{% endif %}">{{ p }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}
